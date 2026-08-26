@@ -1,5 +1,10 @@
 # RepoVitals
 
+[![CI](https://github.com/kyan9400/repo-vitals/actions/workflows/ci.yml/badge.svg)](https://github.com/kyan9400/repo-vitals/actions/workflows/ci.yml)
+[![Deploy](https://github.com/kyan9400/repo-vitals/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/kyan9400/repo-vitals/actions/workflows/deploy-pages.yml)
+[![Release](https://img.shields.io/github/v/release/kyan9400/repo-vitals?color=cbff4d&label=release)](https://github.com/kyan9400/repo-vitals/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-11130f.svg)](LICENSE)
+
 A fast, transparent health check for public GitHub portfolios.
 
 [Live demo](https://kyan9400.github.io/repo-vitals/) · [Report a bug](https://github.com/kyan9400/repo-vitals/issues/new?template=bug_report.yml)
@@ -15,7 +20,8 @@ RepoVitals turns those visible signals into a focused report. Enter any public G
 - a shortlist of six repositories worth pinning;
 - an evidence-based score for each recently active original project;
 - a prioritized queue of practical improvements;
-- a transparent explanation of every point awarded.
+- a transparent explanation of every point awarded;
+- shareable report links and portable Markdown or JSON evidence.
 
 No sign-in or API key is required. The app runs in the browser, reads public GitHub data, and caches the result locally for 15 minutes.
 
@@ -72,6 +78,8 @@ The API client audits up to 12 of the most recently pushed active, original repo
 Unauthenticated GitHub API use is rate-limited by GitHub. RepoVitals minimizes repeated requests with a 15-minute browser cache and shows a useful retry time when the limit is reached.
 
 All processing happens in the browser. RepoVitals does not ask for a token, upload results, use analytics, or execute code from audited repositories.
+
+Exports are generated locally from the current audit. Markdown is intended for planning notes and portfolio reviews; JSON preserves the complete public-data snapshot for further analysis.
 
 ## License
 

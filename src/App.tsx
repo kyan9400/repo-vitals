@@ -6,11 +6,15 @@ import {
   ArrowUpRight,
   BookOpen,
   CheckCircle2,
+  Check,
   CircleAlert,
   Code2,
+  Download,
+  FileText,
   GitBranch,
   Globe2,
   MapPin,
+  Link2,
   RefreshCw,
   Search,
   Workflow,
@@ -18,6 +22,7 @@ import {
 import { RepositoryCard } from './components/RepositoryCard'
 import { ScoreRing } from './components/ScoreRing'
 import { auditGitHubAccount, GitHubApiError } from './lib/github'
+import { buildMarkdownReport, reportFilename } from './lib/report'
 import {
   formatRelativeDate,
   getPinCandidates,
@@ -72,6 +77,7 @@ function EmptyState() {
 }
 
 function Dashboard({ result, onRefresh }: { result: AuditResult; onRefresh: () => void }) {
+  const [exportStatus, setExportStatus] = useState<string | null>(null)
   const portfolioScore = useMemo(
     () => getPortfolioScore(result.user, result.audits),
     [result.audits, result.user],
@@ -92,6 +98,28 @@ function Dashboard({ result, onRefresh }: { result: AuditResult; onRefresh: () =
     0,
   )
   const languages = new Set(result.repositories.map((repository) => repository.language).filter(Boolean))
+
+  function downloadReport(contents: string, filename: string, type: string) {
+    const file = new Blob([contents], { type })
+    const url = URL.createObjectURL(file)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = filename
+    anchor.click()
+    URL.revokeObjectURL(url)
+    setExportStatus(`${filename} downloaded`)
+  }
+
+  async function copyShareLink() {
+    try {
+      const url = new URL(window.location.href)
+      url.searchParams.set('user', result.user.login)
+      await navigator.clipboard.writeText(url.toString())
+      setExportStatus('Share link copied')
+    } catch {
+      setExportStatus('Copy unavailable in this browser')
+    }
+  }
 
   return (
     <main id="audit-results" className="dashboard" tabIndex={-1}>
@@ -152,6 +180,45 @@ function Dashboard({ result, onRefresh }: { result: AuditResult; onRefresh: () =
             <dd>{languages.size}</dd>
           </div>
         </dl>
+      </section>
+
+      <section className="report-strip" aria-labelledby="report-heading">
+        <div>
+          <p className="eyebrow">Portable evidence</p>
+          <h2 id="report-heading">Take the audit into your next review.</h2>
+          <p>Share the live scorecard or export a durable Markdown or JSON snapshot.</p>
+        </div>
+        <div className="report-actions">
+          <button type="button" onClick={() => void copyShareLink()}>
+            {exportStatus === 'Share link copied' ? <Check aria-hidden="true" /> : <Link2 aria-hidden="true" />}
+            Copy link
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              downloadReport(
+                buildMarkdownReport(result),
+                reportFilename(result, 'md'),
+                'text/markdown',
+              )
+            }
+          >
+            <FileText aria-hidden="true" /> Markdown
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              downloadReport(
+                `${JSON.stringify(result, null, 2)}\n`,
+                reportFilename(result, 'json'),
+                'application/json',
+              )
+            }
+          >
+            <Download aria-hidden="true" /> JSON
+          </button>
+        </div>
+        <p className="report-status" aria-live="polite">{exportStatus}</p>
       </section>
 
       <section className="section-block" aria-labelledby="pin-heading">
