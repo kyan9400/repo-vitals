@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: GitHub API status
+    url: https://www.githubstatus.com/
+    about: Check for active API incidents before reporting availability problems.
