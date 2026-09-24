@@ -5,8 +5,20 @@ updates:
     schedule:
       interval: monthly
     groups:
+      # react and react-dom must be installed at the exact same version, so
+      # bumping them in separate PRs leaves CI red. Keep them (and their
+      # type packages) in one PR.
+      react:
+        patterns:
+          - react
+          - react-dom
+          - "@types/react"
+          - "@types/react-dom"
       development-dependencies:
         dependency-type: development
+        exclude-patterns:
+          - "@types/react"
+          - "@types/react-dom"
     ignore:
       # typescript-eslint pins typescript to <6.1.0; a TypeScript major bump
       # makes `npm ci` fail with ERESOLVE. Re-enable once typescript-eslint
